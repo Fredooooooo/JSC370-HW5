@@ -1,0 +1,105 @@
+---
+title: "Homework5"
+author: "You Peng"
+date: '2022-03-27'
+output: 
+    html_document:
+        toc: TRUE
+        toc_float: TRUE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = F, warning = F)
+```
+
+# Interactive visuals
+
+```{r, message=FALSE, echo=FALSE, warning=FALSE}
+library(data.table)
+library(tidyverse)
+library(rdrop2)
+library(GGally)
+library(scales)
+
+library(openintro)
+library(kableExtra)
+library(car)
+
+library(readr)
+library(dplyr)
+library(ggplot2)
+
+library(plotly)
+library(knitr)
+library(widgetframe)
+opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  eval=TRUE,
+  echo = TRUE,
+  cache=FALSE,
+  include=TRUE,
+  fig.width = 7, 
+  fig.align = 'center',
+  fig.asp = 0.618,
+  out.width = "700px")
+```
+
+```{r}
+tennis <- read.csv('cleaned_dataset.csv')
+tennis$negative_square_root_of_height <- I((tennis$height_cm)^-0.5)
+tennis$square_root_of_rank <- I((tennis$average_rank)^0.5)
+
+data_raw1 <- read_csv('player_overviews_unindexed_csv.csv') %>% select(player_id, flag_code)
+tennis <- tennis %>% left_join(data_raw1, by='player_id')
+```
+
+```{r, class.source="code-r-small"}
+p1 <- ggplot(tennis, aes(x=negative_square_root_of_height, y=square_root_of_rank, colour=handedness, shape=backhand)) + geom_point()
+p1 <- ggplotly(p1)
+
+p2 <- ggplot(tennis, aes(x=average_age, fill=flag_code)) + geom_histogram(bins=30)
+p2 <- ggplotly(p2)
+
+p3 <- tennis %>% plot_ly(x=~negative_square_root_of_height, y=~square_root_of_rank, color = ~flag_code, type="scatter", mode="markers", size = ~average_age, sizes=c(5,70), marker=list(sizemode="diameter", opacity=0.5))
+
+tennis <- tennis[order(tennis$flag_code,tennis$average_tourneys_played),]
+p4 <- tennis %>% plot_ly(x=~average_tourneys_played, y=~average_rank, color=~flag_code, type="scatter", mode="lines")
+```
+
+
+## A set of plots {.tabset}
+
+### First Plot
+
+- We will first explore the scatter plots for square root of rank versus negative square root of height. The plot also contains the information about backhand and handedness, where the shape differs for different types of backhand and colour differs for different handedness. There is no obvious pattern in athletes who are right-handed and use one-handed backhand and athletes who are left-handed and use two-handed backhand. However, if we select out the scatter plot for "left-handed, one-handed backhand" athletes and "right-handed, two-handed backhand" athletes, we can see a positive linear pattern in the plot. And since the majority of athletes are right-handed and two-handed backhand, the general scatter plot also shows some positive relationship between square root of rank and negative square root of height.
+
+```{r p1}
+p1
+```
+
+### Second Plot
+
+- Then we also want to take a look at the distribution of ages of athletes from different countries. We can see that the majority of athletes have their age between 25 and 30. And since there are large pink on the bottom, we know that USA have a lot of tennis players. Similarly, we can also find that France have a lot of tennis players. There are much more information could be found if we select certain country to see their distribution in this histogram.
+
+```{r p2}
+p2
+```
+
+### Third Plot
+
+- We can also look at our three numerical variables simultaneously. The following plot shows the relationship between athletes height and rank in different countries, with the size of the circle indicating the age of that athletes. We can see that an athlete from MAR is significantly older than others.
+
+```{r p3}
+p3
+```
+
+### Fourth Plot
+
+- This last plot may not be very useful since the line plot is usually used to see a trend over variables such as time. I provide this plot just as a show case of the multiple line chart. However, we can indeed see a strong negative linear pattern between the average tourneys played by an athlete and his average rank.
+
+```{r p4}
+p4
+```
+
+## {-}

@@ -1,0 +1,14 @@
+---
+title: "JSC370 interactive plots showcase"
+author: "You Peng"
+output: 
+    html_document:
+        toc: TRUE
+        toc_float: TRUE
+---
+
+<br>
+
+Welcome to my JSC370 Homework5 website. This website is meant to provide several interactive plots for my final project. The information about my final project can be found on this website: https://fredooooooo.github.io/JSC370-FinalProject/.
+
+<br>
